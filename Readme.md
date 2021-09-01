@@ -1,21 +1,11 @@
-# elm based pizza pi calculator (with bulma css)
+# pizza-pi-elm
 
-you need to have node 14 or 16 with elm on your machine
+simple demo app for elm
 
-## start developing
+## run
 
-`$ npm i` to load all dependencies
+`$ elm reactor`
 
-`$ npx elm-live src/Main.elm --start-page=custom.html --hot -- --output=main.js`
+### more on elm
 
-- visit http://localhost:8000
-
-elm goodness!
-
-(`$ elm reactor` might work for you if you don't need the css for developing)
-
-### well ...
-
-this project may not be exactly what an experienced elm sorcerer might hand out, but I just wanted to get hang of the language a little.
-
-✌️
+https://elm-lang.org
