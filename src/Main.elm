@@ -170,6 +170,11 @@ timesPi number =
     pi * number
 
 
+sizeCm2ToM2 : Float -> Float
+sizeCm2ToM2 f =
+    100 * 100 * f
+
+
 pricePerCm2 : Int -> Float -> Float
 pricePerCm2 sizeInCm price =
     let
@@ -179,12 +184,7 @@ pricePerCm2 sizeInCm price =
                 |> square
                 |> timesPi
     in
-    price / sizeCm2ToM2 circleArea
-
-
-sizeCm2ToM2 : number -> number
-sizeCm2ToM2 n =
-    n * 100 * 100
+    sizeCm2ToM2 <| price / circleArea
 
 
 

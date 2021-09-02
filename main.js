@@ -5194,8 +5194,8 @@ var $elm$html$Html$div = _VirtualDom_node('div');
 var $author$project$Main$halfOf = function (number) {
 	return number / 2;
 };
-var $author$project$Main$sizeCm2ToM2 = function (n) {
-	return (n * 100) * 100;
+var $author$project$Main$sizeCm2ToM2 = function (f) {
+	return (100 * 100) * f;
 };
 var $elm$core$Basics$pow = _Basics_pow;
 var $author$project$Main$square = function (number) {
@@ -5210,7 +5210,7 @@ var $author$project$Main$pricePerCm2 = F2(
 		var circleArea = $author$project$Main$timesPi(
 			$author$project$Main$square(
 				$author$project$Main$halfOf(sizeInCm)));
-		return price / $author$project$Main$sizeCm2ToM2(circleArea);
+		return $author$project$Main$sizeCm2ToM2(price / circleArea);
 	});
 var $elm$core$Basics$round = _Basics_round;
 var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
