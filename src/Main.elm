@@ -13,27 +13,35 @@ import Html.Events exposing (onInput)
 type alias Model =
     { size : String
     , price : String
+    , perfectSize : String
     }
 
 
 init : Model
 init =
-    Model "30" "10"
+    { size = "28"
+    , price = "10"
+    , perfectSize = "28"
+    }
 
 
 type Msg
-    = Size String
-    | Price String
+    = SizeChange String
+    | PriceChange String
+    | PerfectSizeChange String
 
 
 update : Msg -> Model -> Model
 update msg model =
     case msg of
-        Size size ->
+        SizeChange size ->
             { model | size = size }
 
-        Price price ->
+        PriceChange price ->
             { model | price = price }
+
+        PerfectSizeChange perfectSize ->
+            { model | perfectSize = perfectSize }
 
 
 
@@ -45,7 +53,17 @@ view model =
     div [ class "container p-2" ]
         [ div [ class "content" ]
             [ h1 [ class "header" ] [ text "Pizza Pi Calculator" ]
-            , p [] [ text "made with elm 🌳❤️" ]
+            , small [] [ text "made with elm 🌳❤️" ]
+            , div []
+                [ div [ class "field-label is-normal" ]
+                    [ label [ class "label" ]
+                        [ text "Your sweetspot 🍕 size (diameter in cm)"
+                        ]
+                    ]
+                , div [ class "field" ]
+                    [ viewInput "number" "Perfect Size" model.perfectSize "input" PerfectSizeChange
+                    ]
+                ]
             , div [ class "columns" ]
                 [ div [ class "column" ]
                     [ div [ class "field-label is-normal" ]
@@ -54,7 +72,7 @@ view model =
                             ]
                         ]
                     , div [ class "field" ]
-                        [ viewInput "number" "Size" model.size "input" Size
+                        [ viewInput "number" "Size" model.size "input" SizeChange
                         ]
                     ]
                 , div [ class "column" ]
@@ -64,7 +82,7 @@ view model =
                             ]
                         ]
                     , div [ class "field" ]
-                        [ viewInput "number" "Price" model.price "input" Price
+                        [ viewInput "number" "Price" model.price "input" PriceChange
                         ]
                     ]
                 ]
@@ -77,7 +95,7 @@ view model =
                             [ text "How you will feel: " ]
                         , span
                             []
-                            [ fillingFactor model ]
+                            [ formatFullness <| fullnessFactor model ]
                         ]
                     ]
                 ]
@@ -90,8 +108,14 @@ viewInput t p v c toMsg =
     input [ type_ t, placeholder p, value v, class c, onInput toMsg ] []
 
 
-fillingFactor : Model -> Html msg
-fillingFactor model =
+areaCircle : Float -> Float
+areaCircle diameter =
+    pi * (diameter / 2) ^ 2
+
+
+fullnessFactor : Model -> Int
+fullnessFactor model =
+    -- the sweetspot area of a 30 cm diameter pizza
     let
         pizzaSize =
             case String.toFloat model.size of
@@ -100,29 +124,27 @@ fillingFactor model =
 
                 Nothing ->
                     0.0
-    in
-    formatFullness (fullnessFactor pizzaSize)
 
-
-areaCircle : Float -> Float
-areaCircle diameter =
-    pi * (diameter / 2) ^ 2
-
-
-fullnessFactor : Float -> Int
-fullnessFactor pizzaSize =
-    -- the sweetspot area of a 30 cm diameter pizza
-    let
         bestDiameterOfPizza =
-            30
+            String.toFloat model.perfectSize
 
         bestDiameterOfPizzaSquareMeter =
-            bestDiameterOfPizza / 100
+            case bestDiameterOfPizza of
+                Just diameter ->
+                    diameter / 100
 
-        sweetSpot =
+                Nothing ->
+                    0
+
+        sweetSpotSizeCircleArea =
             areaCircle bestDiameterOfPizzaSquareMeter
     in
-    round ((pizzaSize / sweetSpot) * 100)
+    round <| formatPercentage pizzaSize sweetSpotSizeCircleArea
+
+
+formatPercentage : Float -> Float -> Float
+formatPercentage x y =
+    (x / y) * 100
 
 
 formatFullness : Int -> Html msg

@@ -4355,11 +4355,7 @@ function _Browser_load(url)
 		}
 	}));
 }
-var $author$project$Main$Model = F2(
-	function (size, price) {
-		return {price: price, size: size};
-	});
-var $author$project$Main$init = A2($author$project$Main$Model, '30', '10');
+var $author$project$Main$init = {perfectSize: '28', price: '10', size: '28'};
 var $elm$core$Basics$EQ = {$: 'EQ'};
 var $elm$core$Basics$GT = {$: 'GT'};
 var $elm$core$Basics$LT = {$: 'LT'};
@@ -5172,23 +5168,32 @@ var $elm$browser$Browser$sandbox = function (impl) {
 };
 var $author$project$Main$update = F2(
 	function (msg, model) {
-		if (msg.$ === 'Size') {
-			var size = msg.a;
-			return _Utils_update(
-				model,
-				{size: size});
-		} else {
-			var price = msg.a;
-			return _Utils_update(
-				model,
-				{price: price});
+		switch (msg.$) {
+			case 'SizeChange':
+				var size = msg.a;
+				return _Utils_update(
+					model,
+					{size: size});
+			case 'PriceChange':
+				var price = msg.a;
+				return _Utils_update(
+					model,
+					{price: price});
+			default:
+				var perfectSize = msg.a;
+				return _Utils_update(
+					model,
+					{perfectSize: perfectSize});
 		}
 	});
-var $author$project$Main$Price = function (a) {
-	return {$: 'Price', a: a};
+var $author$project$Main$PerfectSizeChange = function (a) {
+	return {$: 'PerfectSizeChange', a: a};
 };
-var $author$project$Main$Size = function (a) {
-	return {$: 'Size', a: a};
+var $author$project$Main$PriceChange = function (a) {
+	return {$: 'PriceChange', a: a};
+};
+var $author$project$Main$SizeChange = function (a) {
+	return {$: 'SizeChange', a: a};
 };
 var $elm$html$Html$div = _VirtualDom_node('div');
 var $author$project$Main$halfOf = function (number) {
@@ -5265,29 +5270,38 @@ var $author$project$Main$formatFullness = function (fullnessFactorResult) {
 var $author$project$Main$areaCircle = function (diameter) {
 	return $elm$core$Basics$pi * A2($elm$core$Basics$pow, diameter / 2, 2);
 };
-var $author$project$Main$fullnessFactor = function (pizzaSize) {
-	var bestDiameterOfPizza = 30;
-	var bestDiameterOfPizzaSquareMeter = bestDiameterOfPizza / 100;
-	var sweetSpot = $author$project$Main$areaCircle(bestDiameterOfPizzaSquareMeter);
-	return $elm$core$Basics$round((pizzaSize / sweetSpot) * 100);
-};
-var $author$project$Main$fillingFactor = function (model) {
+var $author$project$Main$formatPercentage = F2(
+	function (x, y) {
+		return (x / y) * 100;
+	});
+var $author$project$Main$fullnessFactor = function (model) {
 	var pizzaSize = function () {
-		var _v0 = $elm$core$String$toFloat(model.size);
-		if (_v0.$ === 'Just') {
-			var size = _v0.a;
+		var _v1 = $elm$core$String$toFloat(model.size);
+		if (_v1.$ === 'Just') {
+			var size = _v1.a;
 			return $elm$core$Basics$pi * A2($elm$core$Basics$pow, (size / 100) / 2, 2);
 		} else {
 			return 0.0;
 		}
 	}();
-	return $author$project$Main$formatFullness(
-		$author$project$Main$fullnessFactor(pizzaSize));
+	var bestDiameterOfPizza = $elm$core$String$toFloat(model.perfectSize);
+	var bestDiameterOfPizzaSquareMeter = function () {
+		if (bestDiameterOfPizza.$ === 'Just') {
+			var diameter = bestDiameterOfPizza.a;
+			return diameter / 100;
+		} else {
+			return 0;
+		}
+	}();
+	var sweetSpotSizeCircleArea = $author$project$Main$areaCircle(bestDiameterOfPizzaSquareMeter);
+	return $elm$core$Basics$round(
+		A2($author$project$Main$formatPercentage, pizzaSize, sweetSpotSizeCircleArea));
 };
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
 var $elm$html$Html$hr = _VirtualDom_node('hr');
 var $elm$html$Html$label = _VirtualDom_node('label');
 var $elm$html$Html$p = _VirtualDom_node('p');
+var $elm$html$Html$small = _VirtualDom_node('small');
 var $elm$html$Html$span = _VirtualDom_node('span');
 var $elm$html$Html$strong = _VirtualDom_node('strong');
 var $elm$html$Html$input = _VirtualDom_node('input');
@@ -5370,11 +5384,46 @@ var $author$project$Main$view = function (model) {
 								$elm$html$Html$text('Pizza Pi Calculator')
 							])),
 						A2(
-						$elm$html$Html$p,
+						$elm$html$Html$small,
 						_List_Nil,
 						_List_fromArray(
 							[
 								$elm$html$Html$text('made with elm 🌳❤️')
+							])),
+						A2(
+						$elm$html$Html$div,
+						_List_Nil,
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('field-label is-normal')
+									]),
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$label,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class('label')
+											]),
+										_List_fromArray(
+											[
+												$elm$html$Html$text('Your sweetspot 🍕 size (diameter in cm)')
+											]))
+									])),
+								A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('field')
+									]),
+								_List_fromArray(
+									[
+										A5($author$project$Main$viewInput, 'number', 'Perfect Size', model.perfectSize, 'input', $author$project$Main$PerfectSizeChange)
+									]))
 							])),
 						A2(
 						$elm$html$Html$div,
@@ -5419,7 +5468,7 @@ var $author$project$Main$view = function (model) {
 											]),
 										_List_fromArray(
 											[
-												A5($author$project$Main$viewInput, 'number', 'Size', model.size, 'input', $author$project$Main$Size)
+												A5($author$project$Main$viewInput, 'number', 'Size', model.size, 'input', $author$project$Main$SizeChange)
 											]))
 									])),
 								A2(
@@ -5457,7 +5506,7 @@ var $author$project$Main$view = function (model) {
 											]),
 										_List_fromArray(
 											[
-												A5($author$project$Main$viewInput, 'number', 'Price', model.price, 'input', $author$project$Main$Price)
+												A5($author$project$Main$viewInput, 'number', 'Price', model.price, 'input', $author$project$Main$PriceChange)
 											]))
 									]))
 							])),
@@ -5502,7 +5551,8 @@ var $author$project$Main$view = function (model) {
 												_List_Nil,
 												_List_fromArray(
 													[
-														$author$project$Main$fillingFactor(model)
+														$author$project$Main$formatFullness(
+														$author$project$Main$fullnessFactor(model))
 													]))
 											]))
 									]))
