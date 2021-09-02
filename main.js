@@ -5194,20 +5194,23 @@ var $elm$html$Html$div = _VirtualDom_node('div');
 var $author$project$Main$halfOf = function (number) {
 	return number / 2;
 };
+var $author$project$Main$sizeCm2ToM2 = function (n) {
+	return (n * 100) * 100;
+};
 var $elm$core$Basics$pow = _Basics_pow;
 var $author$project$Main$square = function (number) {
 	return A2($elm$core$Basics$pow, number, 2);
 };
 var $elm$core$Basics$pi = _Basics_pi;
 var $author$project$Main$timesPi = function (number) {
-	return number * $elm$core$Basics$pi;
+	return $elm$core$Basics$pi * number;
 };
 var $author$project$Main$pricePerCm2 = F2(
-	function (size, price) {
+	function (sizeInCm, price) {
 		var circleArea = $author$project$Main$timesPi(
 			$author$project$Main$square(
-				$author$project$Main$halfOf(size)));
-		return ((price / circleArea) * 100) * 100;
+				$author$project$Main$halfOf(sizeInCm)));
+		return price / $author$project$Main$sizeCm2ToM2(circleArea);
 	});
 var $elm$core$Basics$round = _Basics_round;
 var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
@@ -5259,9 +5262,13 @@ var $author$project$Main$formatFullness = function (fullnessFactorResult) {
 		'You will feel full, ' + ($elm$core$String$fromInt(fullnessFactorResult) + ' pct 😎')) : $elm$html$Html$text(
 		'You will feel filled ' + ($elm$core$String$fromInt(fullnessFactorResult) + ' pct 😖'));
 };
+var $author$project$Main$areaCircle = function (diameter) {
+	return $elm$core$Basics$pi * A2($elm$core$Basics$pow, diameter / 2, 2);
+};
 var $author$project$Main$fullnessFactor = function (pizzaSize) {
 	var bestDiameterOfPizza = 30;
-	var sweetSpot = $elm$core$Basics$pi * A2($elm$core$Basics$pow, (bestDiameterOfPizza / 2) / 100, 2);
+	var bestDiameterOfPizzaSquareMeter = bestDiameterOfPizza / 100;
+	var sweetSpot = $author$project$Main$areaCircle(bestDiameterOfPizzaSquareMeter);
 	return $elm$core$Basics$round((pizzaSize / sweetSpot) * 100);
 };
 var $author$project$Main$fillingFactor = function (model) {
@@ -5274,18 +5281,15 @@ var $author$project$Main$fillingFactor = function (model) {
 			return 0.0;
 		}
 	}();
-	return A2(
-		$elm$html$Html$div,
-		_List_Nil,
-		_List_fromArray(
-			[
-				$author$project$Main$formatFullness(
-				$author$project$Main$fullnessFactor(pizzaSize))
-			]));
+	return $author$project$Main$formatFullness(
+		$author$project$Main$fullnessFactor(pizzaSize));
 };
 var $elm$html$Html$h1 = _VirtualDom_node('h1');
+var $elm$html$Html$hr = _VirtualDom_node('hr');
 var $elm$html$Html$label = _VirtualDom_node('label');
 var $elm$html$Html$p = _VirtualDom_node('p');
+var $elm$html$Html$span = _VirtualDom_node('span');
+var $elm$html$Html$strong = _VirtualDom_node('strong');
 var $elm$html$Html$input = _VirtualDom_node('input');
 var $elm$html$Html$Events$alwaysStop = function (x) {
 	return _Utils_Tuple2(x, true);
@@ -5415,8 +5419,7 @@ var $author$project$Main$view = function (model) {
 											]),
 										_List_fromArray(
 											[
-												A5($author$project$Main$viewInput, 'text', 'Size', model.size, 'input', $author$project$Main$Size),
-												$author$project$Main$fillingFactor(model)
+												A5($author$project$Main$viewInput, 'number', 'Size', model.size, 'input', $author$project$Main$Size)
 											]))
 									])),
 								A2(
@@ -5454,8 +5457,53 @@ var $author$project$Main$view = function (model) {
 											]),
 										_List_fromArray(
 											[
-												A5($author$project$Main$viewInput, 'text', 'Price', model.price, 'input', $author$project$Main$Price),
+												A5($author$project$Main$viewInput, 'number', 'Price', model.price, 'input', $author$project$Main$Price)
+											]))
+									]))
+							])),
+						A2($elm$html$Html$hr, _List_Nil, _List_Nil),
+						A2(
+						$elm$html$Html$div,
+						_List_fromArray(
+							[
+								$elm$html$Html$Attributes$class('columns')
+							]),
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$div,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('column')
+									]),
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$p,
+										_List_Nil,
+										_List_fromArray(
+											[
 												$author$project$Main$calculatePricePerCm2(model)
+											])),
+										A2(
+										$elm$html$Html$p,
+										_List_Nil,
+										_List_fromArray(
+											[
+												A2(
+												$elm$html$Html$strong,
+												_List_Nil,
+												_List_fromArray(
+													[
+														$elm$html$Html$text('How you will feel: ')
+													])),
+												A2(
+												$elm$html$Html$span,
+												_List_Nil,
+												_List_fromArray(
+													[
+														$author$project$Main$fillingFactor(model)
+													]))
 											]))
 									]))
 							]))

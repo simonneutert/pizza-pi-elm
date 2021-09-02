@@ -7,14 +7,6 @@ import Html.Events exposing (onInput)
 
 
 
--- MAIN
-
-
-main =
-    Browser.sandbox { init = init, update = update, view = view }
-
-
-
 -- MODEL
 
 
@@ -62,8 +54,7 @@ view model =
                             ]
                         ]
                     , div [ class "field" ]
-                        [ viewInput "text" "Size" model.size "input" Size
-                        , fillingFactor model
+                        [ viewInput "number" "Size" model.size "input" Size
                         ]
                     ]
                 , div [ class "column" ]
@@ -73,8 +64,20 @@ view model =
                             ]
                         ]
                     , div [ class "field" ]
-                        [ viewInput "text" "Price" model.price "input" Price
-                        , calculatePricePerCm2 model
+                        [ viewInput "number" "Price" model.price "input" Price
+                        ]
+                    ]
+                ]
+            , hr [] []
+            , div [ class "columns" ]
+                [ div [ class "column" ]
+                    [ p [] [ calculatePricePerCm2 model ]
+                    , p []
+                        [ strong []
+                            [ text "How you will feel: " ]
+                        , span
+                            []
+                            [ fillingFactor model ]
                         ]
                     ]
                 ]
@@ -98,8 +101,12 @@ fillingFactor model =
                 Nothing ->
                     0.0
     in
-    div []
-        [ formatFullness (fullnessFactor pizzaSize) ]
+    formatFullness (fullnessFactor pizzaSize)
+
+
+areaCircle : Float -> Float
+areaCircle diameter =
+    pi * (diameter / 2) ^ 2
 
 
 fullnessFactor : Float -> Int
@@ -109,8 +116,11 @@ fullnessFactor pizzaSize =
         bestDiameterOfPizza =
             30
 
+        bestDiameterOfPizzaSquareMeter =
+            bestDiameterOfPizza / 100
+
         sweetSpot =
-            pi * ((bestDiameterOfPizza / 2) / 100) ^ 2
+            areaCircle bestDiameterOfPizzaSquareMeter
     in
     round ((pizzaSize / sweetSpot) * 100)
 
@@ -157,16 +167,33 @@ square number =
 
 timesPi : Float -> Float
 timesPi number =
-    number * pi
+    pi * number
 
 
 pricePerCm2 : Int -> Float -> Float
-pricePerCm2 size price =
+pricePerCm2 sizeInCm price =
     let
         circleArea =
-            size
+            sizeInCm
                 |> halfOf
                 |> square
                 |> timesPi
     in
-    price / circleArea * 100 * 100
+    price / sizeCm2ToM2 circleArea
+
+
+sizeCm2ToM2 : number -> number
+sizeCm2ToM2 n =
+    n * 100 * 100
+
+
+
+-- MAIN
+
+
+main =
+    Browser.sandbox
+        { init = init
+        , update = update
+        , view = view
+        }
